@@ -10,7 +10,7 @@ to setup-map
   set-patch-size 1
   resize-world 0 500 0 281
 
-  let user-link "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/draft-map-1-small.png"
+  let user-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/" Gruppennummer ".jpg")
 
   fetch:url-async user-link import-a:pcolors
 
@@ -73,10 +73,10 @@ ticks
 30.0
 
 BUTTON
-20
-30
-200
-90
+19
+138
+199
+198
 setup-map
 setup-map
 NIL
@@ -90,10 +90,10 @@ NIL
 1
 
 SLIDER
-30
-105
-200
-138
+29
+213
+199
+246
 anzahl-menschen
 anzahl-menschen
 0
@@ -105,10 +105,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-25
-145
-205
-205
+24
+253
+204
+313
 NIL
 setup-menschen
 NIL
@@ -122,10 +122,10 @@ NIL
 1
 
 BUTTON
-24
-248
-204
-308
+23
+356
+203
+416
 Simulation starten
 go
 T
@@ -137,6 +137,16 @@ NIL
 NIL
 NIL
 1
+
+CHOOSER
+24
+20
+162
+65
+Gruppennummer
+Gruppennummer
+"Gruppe 1" "Gruppe 2" "Gruppe 3" "Gruppe 4"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
