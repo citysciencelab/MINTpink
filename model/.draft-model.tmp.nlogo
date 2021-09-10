@@ -10,7 +10,7 @@ to setup-map
   set-patch-size 1
   resize-world 0 500 0 281
 
-  let user-link ("https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/group-1.jpg"
+  let user-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/" ".jpg")
 
   fetch:url-async user-link import-a:pcolors
 
