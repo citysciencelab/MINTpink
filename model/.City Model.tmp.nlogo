@@ -18,7 +18,7 @@ menschen-own [fröhlichkeit ziel aufenthaltszeit]
 
 
 ; Funktion, um die Karte zu laden
-to setup-map
+to plan-laden
 
   ; Erst einmal alles zurücksetzen auf Null
   clear-all
@@ -34,14 +34,6 @@ to setup-map
   ; Karte laden
   fetch:url-async karte-link import-a:pcolors
 
-  ; Einzelne Bereiche laden
-  set grünflächen patches with [pcolor > 50 and pcolor < 70 ]
-  set einkaufsmöglichkeiten patches with [pcolor > 40 and pcolor < 40]
-  set geschäftsräume patches with [pcolor > 4 and pcolor < 5]
-  set wohngebäude patches with [pcolor > 10 and pcolor < 20]
-  set soziale-einrichtungen patches with [pcolor > 90 and pcolor < 110]
-  set strassen patches with [pcolor >  and pcolor < 6]
-
 end
 
 ; Funktion zum zurücksetzen von allem
@@ -52,7 +44,15 @@ end
 
 
 ; Funktion, um das Modell zu laden
-to setup-menschen
+to modell-laden
+
+  ; Einzelne Bereiche laden
+  set grünflächen patches with [pcolor > 50 and pcolor < 70 ]
+  set einkaufsmöglichkeiten patches with [pcolor > 40 and pcolor < 50]
+  set geschäftsräume patches with [pcolor > 1 and pcolor < 6]
+  set wohngebäude patches with [pcolor > 10 and pcolor < 20]
+  set soziale-einrichtungen patches with [pcolor > 90 and pcolor < 110]
+  set strassen patches with [pcolor > 7 and pcolor < 9.5]
 
   ; Alle Menschen entfernen
   ask menschen [die]
@@ -68,12 +68,12 @@ to setup-menschen
     ; Fröhlichkeit ist von Anfang an zufällig zwischen 0 und 100
     set fröhlichkeit random 100
 
-    ; Erstes Ziel bestimmen
-    set ziel bestimme-das-nächste-ziel
+    ; Erstes Ziel ist der Anfangsort
+    set ziel patch-here
 
 
     ; Aufenthaltsdauer am aktuellen Ort ist zufällig zwischen 0 und 20 Zeiteinheiten
-    set aufenthaltszeit random 20
+    set aufenthaltszeit random 100
   ]
 
 end
@@ -227,22 +227,22 @@ BUTTON
 207
 145
 Plan laden
-setup-map
+plan-laden
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+P
 NIL
 NIL
 1
 
 SLIDER
-20
-195
-211
-228
+19
+215
+210
+248
 anzahl-menschen
 anzahl-menschen
 0
@@ -259,13 +259,13 @@ BUTTON
 198
 420
 Modell laden
-setup-menschen
+modell-laden
 NIL
 1
 T
 OBSERVER
 NIL
-NIL
+M
 NIL
 NIL
 1
@@ -316,10 +316,10 @@ PENS
 "default" 1.0 0 -13840069 true "" "plot durchschnittliche-fröhlichkeit"
 
 SLIDER
-19
-237
-213
-270
+18
+257
+212
+290
 maximale-geschwindigkeit
 maximale-geschwindigkeit
 0
@@ -361,7 +361,7 @@ TEXTBOX
 21
 172
 241
-193
+209
 Einstellungen für das Modell-----------
 11
 0.0
