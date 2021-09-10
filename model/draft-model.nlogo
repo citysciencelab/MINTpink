@@ -1,55 +1,192 @@
+; Erweiterungen für NetLogo, um die Karten laden zu können
 extensions[fetch import-a]
 
+; Definiere die Unterschiedlichen Bereiche auf einer Karte
+globals [grünflächen einkaufsmöglichkeiten geschäftsräume wohngebäude soziale-einrichtungen strassen]
+
+
+; Definieren, dass es Menschen geben soll in der Simulation
 breed [menschen mensch]
 
+; Definierten von Eigenschaften der Menschen
+menschen-own [fröhlichkeit ziel aufenthaltszeit]
+
+; -- Fröhlichkeit: Wie froh eine Person auf einer Skala von 0-100 ist
+; -- Ziel: Aktuelles Ziel einer Person auf der Karte
+; -- Aufenthaltszeit: Zeit, die eine Person an einer bestimmten Stelle bleiben möchte
+
+
+
+; Funktion, um die Karte zu laden
 to setup-map
 
+  ; Erst einmal alles zurücksetzen auf Null
   clear-all
   reset-ticks
 
+  ; Einstellungen für die Kartengröße
   set-patch-size 1
-  resize-world 0 500 0 281
+  resize-world 0 600 0 400
 
-  let user-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/"Gruppennummer".jpg")
+  ; Link zu der Karte im Internet
+  let karte-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/"Gruppennummer".jpg")
 
-  fetch:url-async user-link import-a:pcolors
+  ; Karte laden
+  fetch:url-async karte-link import-a:pcolors
 
-
-
+  ; Einzelne Bereiche laden
+  set grünflächen patches with [pcolor > 56 and pcolor < 57 ]
+  set einkaufsmöglichkeiten patches with [pcolor > 44 and pcolor < 45]
+  set geschäftsräume patches with [pcolor > 4 and pcolor < 5]
+  set wohngebäude patches with [pcolor > 15 and pcolor < 16]
+  set soziale-einrichtungen patches with [pcolor > 95 and pcolor < 96]
+  set strassen patches with [pcolor > 5 and pcolor < 6]
 
 end
 
+; Funktion zum zurücksetzen von allem
+to reset
+  clear-all
+  reset-ticks
+end
+
+
+; Funktion, um das Modell zu laden
 to setup-menschen
 
+  ; Alle Menschen entfernen
+  ask menschen [die]
+
   create-menschen anzahl-menschen [
-  	setxy random-pxcor random-pycor
+  	; Position der Person auf der Karte
+    setxy random-pxcor random-pycor
+
+    ; Größe und Darstellung der Person
     set size 15
     set shape "person"
+
+    ; Fröhlichkeit ist von Anfang an zufällig zwischen 0 und 100
+    set fröhlichkeit random 100
+
+    ; Erstes Ziel bestimmen
+    set ziel bestimme-das-nächste-ziel
+
+
+    ; Aufenthaltsdauer am aktuellen Ort ist zufällig zwischen 0 und 20 Zeiteinheiten
+    set aufenthaltszeit random 20
   ]
 
 end
 
+
+
+; Eigentlicher Code für die Simulation
 to go
 
+  ; Frage alle Menschen auf der Karte etwas bestimmtes zu tun
   ask menschen [
 
-    ; Richtungsänderung in 20% der Fälle
-    if random 10 < 3 [
-      rt random 360
+    ; Wenn die Aufenthaltszeit noch größer 0 ist, dann entweder weiter zum Ziel gehen oder am Ziel bleiben, wenn die Person schon da ist
+    ifelse aufenthaltszeit > 0 [
+
+      ; Überprüfe, ob die Person schon am Ziel angekommen ist
+      ifelse patch-here = ziel [
+
+        set aufenthaltszeit aufenthaltszeit - 1 ; Aufenthaltszeit um eine Zeiteinheit verkürzen
+
+      ][
+        ; Sonst soll sich die Person auf das Ziel zubewegen
+
+        set heading towards ziel ; Zeige die richtige Richtung an
+        forward random maximale-geschwindigkeit ; Gehe einen Schritt nach vorne
+      ]
+    ] [
+      ; Wenn die Aufenthaltszeit abgelaufen ist, nächstes Ziel auswählen und die Aufenthaltszeit dort bestimmen
+      set ziel bestimme-das-nächste-ziel
+      set aufenthaltszeit bestimme-aufenthaltszeit ziel
+
     ]
 
-    forward random 10
+    ; Verändern der Fröhlichkeit basierend auf der Umwelt
+    let veränderung bestimme-fröhlichkeit-veränderung patch-here
+    set fröhlichkeit max (list min (list (fröhlichkeit + veränderung) 100) 0)
   ]
 
   tick
 
 end
+
+; Funktion zum bestimmes des nächsten Ziels
+to-report bestimme-das-nächste-ziel
+
+  ; Wahrscheinlichkeiten für das nächste Ziel (in Prozent)
+  let wahrscheinlichkeit-grünfläche 10
+  let wahrscheinlichkeit-einkaufsmöglichkeit 10
+  let wahrscheinlichkeit-geschäftsraum 40
+  let wahrscheinlichkeit-wohngebäude 30
+  let wahrscheinlichkeit-soziale-einrichtung 10
+
+  ; Überprüfen, ob alle Wahrscheinlichkeiten zusammen auch 1 ergeben
+  if (wahrscheinlichkeit-grünfläche + wahrscheinlichkeit-einkaufsmöglichkeit + wahrscheinlichkeit-geschäftsraum + wahrscheinlichkeit-wohngebäude + wahrscheinlichkeit-soziale-einrichtung) != 100 [
+    user-message "Bitte achte darauf, dass die Wahrscheinlichkeit von allen Zielen 1 beträgt"
+  ]
+
+  ; Eine Zufallszahl generieren
+  let zufallszahl random 100
+  let nächstes-ziel 0
+
+  ; Die Wahrscheinlichkeiten benutzen, um das nächste Ziel der Person zu bestimmen
+  set nächstes-ziel (ifelse-value
+    zufallszahl < wahrscheinlichkeit-grünfläche [one-of grünflächen]
+    zufallszahl < wahrscheinlichkeit-grünfläche + wahrscheinlichkeit-einkaufsmöglichkeit [one-of einkaufsmöglichkeiten]
+    zufallszahl < wahrscheinlichkeit-grünfläche + wahrscheinlichkeit-einkaufsmöglichkeit + wahrscheinlichkeit-geschäftsraum [one-of geschäftsräume]
+    zufallszahl < wahrscheinlichkeit-grünfläche + wahrscheinlichkeit-einkaufsmöglichkeit + wahrscheinlichkeit-geschäftsraum + wahrscheinlichkeit-wohngebäude [one-of wohngebäude]
+    zufallszahl < wahrscheinlichkeit-grünfläche + wahrscheinlichkeit-einkaufsmöglichkeit + wahrscheinlichkeit-geschäftsraum + wahrscheinlichkeit-soziale-einrichtung [one-of soziale-einrichtungen]
+    [one-of patches]  )
+
+  report nächstes-ziel
+
+end
+
+; Funktion zum Bestimmen der Aufenthaltszeit
+to-report bestimme-aufenthaltszeit [nächstes-ziel]
+
+  ; Überprüfe, was das nächste Ziel ist und davon ausgehend die Zeiteinheiten festlegen, die eine Person am Ziel bleiben soll
+  let zeit (ifelse-value
+    member? nächstes-ziel grünflächen [150]
+    member? nächstes-ziel einkaufsmöglichkeiten [100]
+    member? nächstes-ziel geschäftsräume [400]
+    member? nächstes-ziel wohngebäude [800]
+    member? nächstes-ziel soziale-einrichtungen [100]
+    [0]
+  )
+
+  report zeit
+
+end
+
+; Funktion zum Verändern der Fröhlichkeit
+to-report bestimme-fröhlichkeit-veränderung [aktueller-ort]
+  let veränderung (ifelse-value
+    member? aktueller-ort grünflächen [0.5]
+    member? aktueller-ort einkaufsmöglichkeiten [0.2]
+    member? aktueller-ort geschäftsräume [-0.2]
+    member? aktueller-ort wohngebäude [0]
+    member? aktueller-ort soziale-einrichtungen [0.5]
+    [0]
+  )
+
+  report veränderung
+
+end
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
-365
-10
-874
-301
+532
+13
+1141
+423
 -1
 -1
 1.0
@@ -59,25 +196,25 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 0
-500
+600
 0
-281
+400
 1
 1
 1
-ticks
+Zeit
 30.0
 
 BUTTON
-19
-138
-199
-198
-setup-map
+27
+85
+207
+145
+Plan laden
 setup-map
 NIL
 1
@@ -90,26 +227,26 @@ NIL
 1
 
 SLIDER
-29
-213
-199
-246
+20
+195
+211
+228
 anzahl-menschen
 anzahl-menschen
 0
 100
-50.0
+100.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-24
-253
-204
-313
-NIL
+18
+360
+198
+420
+Modell laden
 setup-menschen
 NIL
 1
@@ -122,10 +259,10 @@ NIL
 1
 
 BUTTON
-23
-356
-203
-416
+293
+16
+505
+76
 Simulation starten
 go
 T
@@ -139,14 +276,94 @@ NIL
 1
 
 CHOOSER
-24
-20
-162
-65
+27
+32
+207
+77
 Gruppennummer
 Gruppennummer
 "Gruppe-1" "Gruppe-2" "Gruppe-3" "Gruppe-4"
 0
+
+PLOT
+292
+246
+506
+417
+Durchschnittliche Fröhlichkeit
+Zeit
+Fröhlichkeit
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -13840069 true "" "plot mean [fröhlichkeit] of menschen"
+
+SLIDER
+19
+237
+213
+270
+maximale-geschwindigkeit
+maximale-geschwindigkeit
+0
+5
+2.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+293
+82
+507
+115
+Zurücksetzen
+reset
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+TEXTBOX
+19
+11
+256
+39
+Einstellungen für die Gruppe ----------
+11
+0.0
+1
+
+TEXTBOX
+21
+172
+241
+193
+Einstellungen für das Modell-----------
+11
+0.0
+1
+
+TEXTBOX
+256
+15
+271
+449
+|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|\n\n|
+11
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
