@@ -10,7 +10,7 @@ to setup-map
   set-patch-size 1
   resize-world 0 500 0 281
 
-  let user-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/" ".jpg")
+  let user-link (word "https://raw.githubusercontent.com/herzogrh/MINTpink/main/images/Gruppe 1.jpg")
 
   fetch:url-async user-link import-a:pcolors
 
@@ -145,7 +145,7 @@ CHOOSER
 65
 Gruppennummer
 Gruppennummer
-"Gruppe 1" "Gruppe 2" "Gruppe 3" "Gruppe 4"
+"Gruppe-1" "Gruppe-2" "Gruppe-3" "Gruppe-4"
 0
 
 @#$#@#$#@
