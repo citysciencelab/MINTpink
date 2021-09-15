@@ -138,7 +138,7 @@ end
 to-report bestimme-das-nächste-ziel
 
   ; Wahrscheinlichkeiten für das nächste Ziel (in Prozent)
-  let wahrscheinlichkeit-grünfläche 10
+  let wahrscheinlichkeit-grünfläche 0
   let wahrscheinlichkeit-einkaufsmöglichkeit 10
   let wahrscheinlichkeit-geschäftsraum 40
   let wahrscheinlichkeit-wohngebäude 30
@@ -366,7 +366,7 @@ maximale-geschwindigkeit
 maximale-geschwindigkeit
 0
 5
-5.0
+2.0
 1
 1
 NIL
