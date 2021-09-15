@@ -10,9 +10,10 @@ Beitrag des CityScienceLabs Hamburgs für das mint:pink Programm der Städte Ham
 
 ## Modellverwendung
 1. Auf den grünen Button `Code` drücken und das .zip herunterladen.
-1. Unter https://www.netlogoweb.org/launch# das Modell unter dem Ordner `model` hochladen
-2. Gruppe im Dropdown-Menü auswählen
-3. `Plan laden` klicken. Der Entwurf sollte dann in NetLogo Web auftauchen
-4. Mit `Modell laden` die Simulation initialisieren
-5. Der Klick auf `Simulation starten` lässt die Simulation beginnen
+2. Das .zip entpacken und den Ordner `model` öffnen
+3. Unter https://www.netlogoweb.org/launch# `City Model.nlogo` in dem Ordner `model` hochladen
+4. Gruppe im Dropdown-Menü auswählen
+5. `Plan laden` klicken. Der Entwurf sollte dann in NetLogo Web auftauchen
+6. Mit `Modell laden` die Simulation initialisieren
+7. Der Klick auf `Simulation starten` lässt die Simulation beginnen
 
