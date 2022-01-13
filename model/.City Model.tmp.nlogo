@@ -32,7 +32,7 @@ to plan-laden
   resize-world 0 600 0 400
 
   ; Link zu der Karte im Internet
-  let karte-link (word "https://https://github.com/JohnnaFly/MINTpink/tree/main/maps"Gruppennummer".jpg")
+  let karte-link (word "https://https://https://raw.githubusercontent.com/JohnnaFly/MINTpink/main/maps/Gruppe-1.jpg"Gruppennummer".jpg")
 
   ; Karte laden
   fetch:url-async karte-link import-a:pcolors
